@@ -1,0 +1,10 @@
+Server :
+  Port : 8080
+  Token: "1235"
+  TokenTTL: 20m
+
+Database:
+  URL: "postgres://123123123"
+
+Logger:
+  Level: "debug"

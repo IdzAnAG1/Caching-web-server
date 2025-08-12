@@ -1,26 +1,27 @@
 package config
 
 import (
-	"CachingWebServer/internal/flags"
+	"CachingWebServer/internal/app/cli"
 	"bytes"
 	_ "embed"
-	"errors"
-	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
+	"time"
 )
 
 type Config struct {
 	Server struct {
-		Port int `mapstructure:"Port" validate:"required,min=0,max=65535"`
+		Port     int           `mapstructure:"Port" validate:"required,min=0,max=65535"`
+		Token    string        `mapstructure:"Token" validate:"required"`
+		TokenTTL time.Duration `mapstructure:"TokenTTL" validate:"required"`
 	} `mapstructure:"Server"`
 
 	Database struct {
-		URL string `mapstructure:"URL"`
+		URL string `mapstructure:"URL" validate:"required"`
 	} `mapstructure:"Database"`
 
 	Logger struct {
-		Level string `mapstructure:"Level"`
+		Level string `mapstructure:"Level" validate:"required,oneof=debug local info"`
 	} `mapstructure:"Logger"`
 }
 
@@ -28,32 +29,40 @@ type Config struct {
 var Defaults []byte
 
 func MustLoadConfig() Config {
+	cfg, err := LoadConfig()
+	if err != nil {
+		panic(err)
+	}
+	return cfg
+}
+func LoadConfig() (Config, error) {
 	validate := validator.New()
 	var (
 		cfg = Config{}
 	)
 	if err := LoadDefaults(); err != nil {
-		panic("Cannot Load Defaults fields")
+		return Config{}, err
 	}
-	if *flags.CfgPath != "" {
-		viper.SetConfigFile(*flags.CfgPath)
+	if *cli.CfgPath != "" {
+		viper.SetConfigFile(*cli.CfgPath)
+		if err := viper.MergeInConfig(); err != nil {
+			return Config{}, err
+		}
 	}
+
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("CWS")
 
 	if err := viper.Unmarshal(&cfg); err != nil {
-		panic("")
+		return Config{}, err
 	}
 	if err := validate.Struct(cfg); err != nil {
-		panic("")
+		return Config{}, err
 	}
-	return cfg
+	return cfg, nil
 }
 
 func LoadDefaults() error {
 	viper.SetConfigType("yaml")
-	if err := viper.ReadConfig(bytes.NewReader(Defaults)); err != nil {
-		return errors.New(fmt.Sprintf("Failed to read configuration defaults fields (%v)", err))
-	}
-	return nil
+	return viper.ReadConfig(bytes.NewReader(Defaults))
 }
