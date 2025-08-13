@@ -27,6 +27,7 @@ func (s *Server) Launch() error {
 	r := gin.Default()
 	r.POST("/api/register", H.RegisterNewUser)
 	r.GET("/api/users", H.GetUsers)
+	r.POST("/login", H.Login)
 	err := r.Run("localhost:" + s.port)
 	if err != nil {
 		return err

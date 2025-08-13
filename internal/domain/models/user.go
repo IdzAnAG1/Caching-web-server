@@ -5,11 +5,11 @@ import (
 )
 
 type User struct {
-	ID           int64
+	ID           string
 	Login        string
 	PasswordHash string
 	CreateAt     time.Time
 }
 
 // test
-var Users []User
+var Users = make(map[string]User)
