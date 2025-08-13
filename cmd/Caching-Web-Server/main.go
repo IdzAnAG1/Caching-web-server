@@ -6,6 +6,6 @@ func main() {
 	A := app.NewApp()
 	err := A.Launch()
 	if err != nil {
-		
+
 	}
 }

@@ -11,9 +11,9 @@ import (
 
 type Config struct {
 	Server struct {
-		Port     int           `mapstructure:"Port" validate:"required,min=0,max=65535"`
-		Token    string        `mapstructure:"Token" validate:"required"`
-		TokenTTL time.Duration `mapstructure:"TokenTTL" validate:"required"`
+		Port       int           `mapstructure:"Port" validate:"required,min=0,max=65535"`
+		AdminToken string        `mapstructure:"Token" validate:"required"`
+		TokenTTL   time.Duration `mapstructure:"TokenTTL" validate:"required"`
 	} `mapstructure:"Server"`
 
 	Database struct {

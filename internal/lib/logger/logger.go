@@ -38,6 +38,7 @@ func IdentifyLogger(cfg config.Config) (*slog.Logger, error) {
 	}
 }
 
+// #TODO Implement
 //type ZapHandler struct {
 //	zap         *zap.Logger
 //	level       *slog.Level

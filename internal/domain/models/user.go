@@ -10,3 +10,6 @@ type User struct {
 	PasswordHash string
 	CreateAt     time.Time
 }
+
+// test
+var Users []User

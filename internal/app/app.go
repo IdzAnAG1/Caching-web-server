@@ -3,6 +3,7 @@ package app
 import (
 	"CachingWebServer/internal/config"
 	"CachingWebServer/internal/lib/logger"
+	"CachingWebServer/internal/server"
 	"flag"
 	"fmt"
 )
@@ -27,5 +28,10 @@ func (a *App) Launch() error {
 	}
 
 	log.Info("Ура")
+
+	s := server.New(cfg)
+	if err := s.Launch(); err != nil {
+		return err
+	}
 	return nil
 }
