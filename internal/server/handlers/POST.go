@@ -3,7 +3,9 @@ package handlers
 import (
 	"CachingWebServer/internal/domain/models"
 	"CachingWebServer/internal/lib/crypt"
+	"CachingWebServer/internal/lib/jwt"
 	"CachingWebServer/internal/lib/reg"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"time"
@@ -20,6 +22,9 @@ func (h *Handlers) RegisterNewUser(c *gin.Context) {
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(400, err.Error())
 		return
+	}
+	if req.AdminToken != h.AdminToken {
+		c.JSON(400, gin.H{"Error": "Access denied"})
 	}
 	if !reg.ValidatePassword(req.Password) {
 		c.JSON(400, gin.H{"error": "Password is invalid"})
@@ -59,5 +64,15 @@ func (h *Handlers) Login(c *gin.Context) {
 		return
 	}
 	// Todo update this shit
-	c.JSON(200, gin.H{"resp": "You are maybe in login"})
+	hash, err := crypt.Hash(req.Password)
+	if err != nil {
+		c.JSON(400, gin.H{"Internal Error": "Crypt Error"})
+		return
+	}
+	token, err := jwt.SignToken(req.Login, h.ServerToken, hash, h.TTL)
+	if err != nil {
+		c.JSON(400, gin.H{"Internal Error": fmt.Sprintf("token err :%v", err.Error())})
+		return
+	}
+	c.JSON(200, gin.H{"resp": token})
 }

@@ -9,26 +9,28 @@ import (
 )
 
 type Server struct {
-	port     string
-	adToken  string
-	TokenTTL time.Duration
+	Port       string
+	Token      string
+	TokenTTL   time.Duration
+	AdminToken string
 }
 
 func New(cfg config.Config) *Server {
 	return &Server{
-		port:     strconv.Itoa(cfg.Server.Port),
-		adToken:  cfg.Server.AdminToken,
-		TokenTTL: cfg.Server.TokenTTL,
+		Port:       strconv.Itoa(cfg.Server.Port),
+		Token:      cfg.Server.Token,
+		TokenTTL:   cfg.Server.TokenTTL,
+		AdminToken: cfg.Admin.Token,
 	}
 }
 func (s *Server) Launch() error {
-	H := handlers.NewHandlers(s.adToken)
+	H := handlers.NewHandlers(s.Token, s.AdminToken, s.TokenTTL)
 
 	r := gin.Default()
 	r.POST("/api/register", H.RegisterNewUser)
 	r.GET("/api/users", H.GetUsers)
 	r.POST("/login", H.Login)
-	err := r.Run("localhost:" + s.port)
+	err := r.Run("localhost:" + s.Port)
 	if err != nil {
 		return err
 	}
