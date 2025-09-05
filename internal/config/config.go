@@ -18,8 +18,10 @@ type Config struct {
 	Admin struct {
 		Token string `mapstructure:"Token" validate:"required"`
 	} `mapstructure:"Admin"`
+	
 	Database struct {
-		URL string `mapstructure:"URL" validate:"required"`
+		URL     string        `mapstructure:"URL" validate:"required"`
+		ConnTTL time.Duration `mapstructure:"ConnectionTTL" validate:"required"`
 	} `mapstructure:"Database"`
 
 	Logger struct {
@@ -30,7 +32,7 @@ type Config struct {
 //go:embed Defaults.yaml
 var Defaults []byte
 
-func MustLoadConfig() Config {
+funac MustLoadConfig() Config {
 	cfg, err := LoadConfig()
 	if err != nil {
 		panic(err)

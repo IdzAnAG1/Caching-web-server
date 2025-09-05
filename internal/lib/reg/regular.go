@@ -21,22 +21,24 @@ var RegularExpression = map[string]string{
 }
 
 func ValidatePassword(password string) bool {
-	flag := true
 	for _, value := range RegularExpression {
-		flag = Match(value, password)
+		if !Match(value, password) {
+			return false
+		}
 	}
-	return flag
+	return true
 }
 
 func ValidateLogin(login string) bool {
-	flag := true
 	for key, value := range RegularExpression {
 		if key == QS {
-			flag = Match(value, login)
+			if !Match(value, login) {
+				return false
+			}
 		}
 		continue
 	}
-	return flag
+	return true
 }
 
 func Match(exp string, password string) bool {

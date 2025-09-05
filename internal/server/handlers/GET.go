@@ -12,3 +12,7 @@ type GetHandlers struct {
 func (h *Handlers) GetUsers(c *gin.Context) {
 	c.JSON(200, gin.H{"users": models.Users})
 }
+
+func (h *Handlers) GetUserFiles(c *gin.Context) {
+
+}

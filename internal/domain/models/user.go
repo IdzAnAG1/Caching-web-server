@@ -9,6 +9,7 @@ type User struct {
 	Login        string
 	PasswordHash string
 	CreateAt     time.Time
+	Files        []File
 }
 
 // test

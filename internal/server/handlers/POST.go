@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"os"
 	"time"
 )
 
@@ -63,16 +64,33 @@ func (h *Handlers) Login(c *gin.Context) {
 		c.JSON(400, gin.H{"Error": "Invalid password"})
 		return
 	}
-	// Todo update this shit
-	hash, err := crypt.Hash(req.Password)
-	if err != nil {
-		c.JSON(400, gin.H{"Internal Error": "Crypt Error"})
-		return
-	}
-	token, err := jwt.SignToken(req.Login, h.ServerToken, hash, h.TTL)
+	token, err := jwt.SignToken(models.Users[req.Login].ID, h.ServerToken, h.TTL)
 	if err != nil {
 		c.JSON(400, gin.H{"Internal Error": fmt.Sprintf("token err :%v", err.Error())})
 		return
 	}
 	c.JSON(200, gin.H{"resp": token})
+}
+
+type UploadReq struct {
+	Name string  `json:"Name" binding:"required"`
+	file os.File `json:"File"`
+}
+
+func (h *Handlers) UploadTheFile(c *gin.Context) {
+	req := UploadReq{}
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(400, gin.H{"Internal Error": "Binding Req"})
+		return
+	}
+	file, err := c.FormFile(req.Name)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "File is required"})
+		return
+	}
+	if err := c.SaveUploadedFile(file, "./TEMP"); err != nil {
+		c.JSON(400, gin.H{"Internal Error": "Failed attempt to save a file"})
+		return
+	}
+	c.JSON(200, gin.H{"resp": "NORM"})
 }

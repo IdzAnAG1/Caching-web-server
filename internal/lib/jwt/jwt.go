@@ -6,17 +6,15 @@ import (
 )
 
 type Claims struct {
-	UserLogin    string
-	UserPassword string
+	UserID string
 	jwt.RegisteredClaims
 }
 
-func SignToken(login, serverToken, password string, TTL time.Duration) (string, error) {
+func SignToken(ID, serverToken string, TTL time.Duration) (string, error) {
 	// Todo This shit returned the error, solved it | hmmm solved ?
 	exptime := time.Now().Add(TTL)
 	claims := &Claims{
-		UserLogin:    login,
-		UserPassword: password,
+		UserID: ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(exptime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
